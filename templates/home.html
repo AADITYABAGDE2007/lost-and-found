@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Home | Lost & Found</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+    .navbar {
+      margin-bottom: 20px;
+    }
+    table img {
+      border-radius: 5px;
+    }
+    .container h3 {
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ✅ Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Lost & Found</a>
+      <div>
+        <a href="{{ url_for('report_lost') }}" class="btn btn-warning btn-sm">Report Lost</a>
+        <a href="{{ url_for('report_found') }}" class="btn btn-success btn-sm">Report Found</a>
+        <a href="{{ url_for('search') }}" class="btn btn-info btn-sm">Search</a>
+        <a href="{{ url_for('logout') }}" class="btn btn-danger btn-sm">Logout</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ✅ Main Content -->
+  <div class="container">
+    <h3 class="text-center">All Reported Items</h3>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="alert alert-info">
+          {% for message in messages %}
+            {{ message }}
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <div class="table-responsive">
+      <table class="table table-bordered table-striped align-middle text-center">
+        <thead class="table-dark">
+          <tr>
+            <th>ID</th>
+            <th>Image</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Location</th>
+            <th>Reporter</th>
+            <th>Contact</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in items %}
+          <tr>
+            <td>{{ item[0] }}</td>
+            <td>
+              {% if item[8] %}
+                <img src="{{ url_for('static', filename='uploads/' ~ item[8]) }}" width="70" height="70" style="object-fit:cover;">
+              {% else %}
+                <span class="text-muted">No image</span>
+              {% endif %}
+            </td>
+            <td>{{ item[1] }}</td>
+            <td>{{ item[2] }}</td>
+            <td>{{ item[3] }}</td>
+            <td>{{ item[4] }}</td>
+            <td>{{ item[5] }}</td>
+            <td>
+              {% if item[6] == 'lost' %}
+                <span class="badge bg-warning text-dark">Lost</span>
+              {% elif item[6] == 'found' %}
+                <span class="badge bg-success">Found</span>
+              {% else %}
+                <span class="badge bg-secondary">Claimed</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if item[6] != 'claimed' %}
+                <a href="{{ url_for('claim', item_id=item[0]) }}" class="btn btn-primary btn-sm">Claim</a>
+              {% else %}
+                <button class="btn btn-secondary btn-sm" disabled>Claimed</button>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</body>
+</html>
